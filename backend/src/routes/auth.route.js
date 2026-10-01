@@ -1,0 +1,10 @@
+import express from "express";
+import { checkAuth, updatePublicKey } from "../controllers/auth.controller.js";
+import { protectRoute } from "../middleware/auth.middleware.js";
+
+const router = express.Router();
+
+router.get("/check", protectRoute, checkAuth);
+router.patch("/public-key", protectRoute, updatePublicKey);
+
+export default router;
