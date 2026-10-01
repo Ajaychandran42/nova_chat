@@ -7,7 +7,7 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 // itself, so this is one layer, not the whole defense.
 export const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many requests — please slow down." },
@@ -17,7 +17,7 @@ export const generalLimiter = rateLimit({
 // exhaustion via uploads) so it gets its own tighter budget.
 export const sendMessageLimiter = rateLimit({
   windowMs: 60 * 1000,
-  limit: 30,
+  limit: 100,
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => req.user?._id?.toString() || ipKeyGenerator(req.ip),
