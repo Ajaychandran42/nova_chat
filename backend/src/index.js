@@ -11,7 +11,6 @@ import { clerkMiddleware } from "@clerk/express";
 
 import User from "./models/user.model.js";
 import { connectDB } from "./lib/db.js";
-import job from "./lib/cron.js";
 import { generalLimiter } from "./lib/rateLimiters.js";
 import { sanitizeInputs } from "./middleware/sanitize.middleware.js";
 
@@ -21,7 +20,7 @@ import messageRoutes from "./routes/message.route.js";
 import groupRoutes from "./routes/group.route.js";
 import { app, server } from "./lib/socket.js";
 
-const PORT = process.env.PORT;
+const PORT = Number(process.env.PORT) || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -35,11 +34,13 @@ if (isProduction && !FRONTEND_URL) {
 
 const publicDir = path.join(process.cwd(), "public");
 
-// Security headers (CSP, disables sniffing/framing, etc.) and turns off the
-// `X-Powered-By: Express` header so responses don't advertise the stack.
+// Security headers and no `X-Powered-By`. CSP is disabled because Clerk loads
+// its authentication resources from an instance-specific external origin; a
+// restrictive static policy here would break sign-in. Configure a tailored CSP
+// at the proxy/CDN layer if one is required.
 app.use(
   helmet({
-    contentSecurityPolicy: isProduction ? undefined : false,
+    contentSecurityPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" }, // media is served to <img>/<video>/<audio> tags
   }),
 );
@@ -91,6 +92,4 @@ app.use((err, req, res, next) => {
 server.listen(PORT, () => {
   connectDB();
   console.log("Server is up and running on PORT:", PORT);
-
-  if (isProduction) job.start();
 });

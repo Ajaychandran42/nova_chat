@@ -3,7 +3,7 @@ import { axiosInstance } from "../lib/axios";
 import { io } from "socket.io-client";
 import { getOrCreateKeyPair, publicKeyToBase64 } from "../lib/e2ee";
 
-const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || (import.meta.env.DEV ? "http://localhost:3000" : undefined);
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -60,7 +60,7 @@ export const useAuthStore = create((set, get) => ({
     // `auth` as a function is re-invoked on every connection attempt
     // (including automatic reconnects), so this always sends a fresh,
     // still-valid Clerk session token rather than one that's gone stale.
-    const socket = io(BASE_URL, {
+    const socket = io(SOCKET_URL, {
       auth: async (callback) => {
         const token = await window.Clerk?.session?.getToken();
         callback({ token });

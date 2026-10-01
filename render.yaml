@@ -1,0 +1,25 @@
+# Render Blueprint for the single-service Nova Chat deployment.
+# Create a MongoDB Atlas database separately and supply its URI when prompted.
+services:
+  - type: web
+    name: nova-chat
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        sync: false
+      - key: MONGO_URI
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_WEBHOOK_SIGNING_SECRET
+        sync: false
+      - key: IMAGEKIT_PRIVATE_KEY
+        sync: false
+      # Render forwards environment variables into Docker builds as build args.
+      # This is a public browser key, never a Clerk secret key.
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
