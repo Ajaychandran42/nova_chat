@@ -7,6 +7,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss(), babel({ presets: [reactCompilerPreset()] })],
   build: {
+    chunkSizeWarningLimit: 1000, // This line silences the 500kB warning
     rolldownOptions: {
       output: {
         manualChunks(id) {
