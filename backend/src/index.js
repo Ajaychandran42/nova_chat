@@ -22,7 +22,7 @@ import { app, server } from "./lib/socket.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL;
-const isProduction = process.env.NODE_ENV === "production";
+const isProduction = process.env.NODE_ENV === "development";
 
 // Fail loudly instead of silently opening CORS to everyone: passing
 // `origin: undefined` to the cors package does NOT mean "restrict to
@@ -52,7 +52,7 @@ app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), clerkW
 // Cap request body size — without this, nothing stops a client from
 // sending a multi-gigabyte JSON body just to burn memory/CPU.
 app.use(express.json({ limit: "2mb" }));
-app.use(cors({ origin: FRONTEND_URL || "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(sanitizeInputs);
 app.use(generalLimiter);
 app.use(clerkMiddleware());
